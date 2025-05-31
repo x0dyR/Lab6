@@ -1,7 +1,6 @@
 package org.example.ui;
 
 import org.example.AccessControlService;
-import org.example.ui.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,47 +14,64 @@ public class MainFrame extends JFrame {
 
         setTitle("RBAC Admin Panel");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setSize(400, 500);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
 
-        JButton manageUsersButton = new JButton("Управление пользователями");
-        manageUsersButton.addActionListener(e -> {
-            if (_accessControlService.hasPermissionFor(_userId, "view_users")) {
-                new UserManagementFrame();
-            } else {
-                JOptionPane.showMessageDialog(this, "У вас нет доступа к управлению пользователями");
-            }
-        });
+        if (_accessControlService.hasPermissionFor(_userId, "view_users")) {
+            JButton manageUsersButton = new JButton("Управление пользователями");
+            manageUsersButton.addActionListener(e -> new UserManagementFrame());
+            add(manageUsersButton);
+        }
 
-        JButton assignRolesButton = new JButton("Управление ролями пользователей");
-        assignRolesButton.addActionListener(e -> new UserRolesManagementFrame());
+        if (_accessControlService.hasPermissionFor(_userId, "manage_user_roles")) {
+            JButton assignRolesButton = new JButton("Управление ролями пользователей");
+            assignRolesButton.addActionListener(e -> new UserRolesManagementFrame());
+            add(assignRolesButton);
+        }
 
-        JButton assignPermissionsButton = new JButton("Управление правами ролей");
-        assignPermissionsButton.addActionListener(e -> new RolePermissionsManagementFrame());
+        if (_accessControlService.hasPermissionFor(_userId, "manage_role_permissions")) {
+            JButton assignPermissionsButton = new JButton("Управление правами ролей");
+            assignPermissionsButton.addActionListener(e -> new RolePermissionsManagementFrame());
+            add(assignPermissionsButton);
+        }
 
-        JButton overviewButton = new JButton("Полный обзор RBAC");
-        overviewButton.addActionListener(e -> new RBACOverviewFrame(_userId));
+        if (_accessControlService.hasPermissionFor(_userId, "rbac_overview")) {
+            JButton overviewButton = new JButton("Полный обзор RBAC");
+            overviewButton.addActionListener(e -> new RBACOverviewFrame(_userId));
+            add(overviewButton);
+        }
 
-        JButton accessOverviewButton = new JButton("Обзор доступа пользователя");
-        accessOverviewButton.addActionListener(e -> new UserAccessOverviewFrame());
+        if (_accessControlService.hasPermissionFor(_userId, "user_access_overview")) {
+            JButton accessOverviewButton = new JButton("Обзор доступа пользователя");
+            accessOverviewButton.addActionListener(e -> new UserAccessOverviewFrame());
+            add(accessOverviewButton);
+        }
 
-        add(accessOverviewButton);
-        add(manageUsersButton);
-        add(assignRolesButton);
-        add(assignPermissionsButton);
-        add(overviewButton);
+        // Заказы (основной функционал)
 
-        /*
-        Sad
-        //кнокпка проверки прав текущего пользователя
-        JButton debugButton = new JButton("Права пользователя");
-        debugButton.addActionListener(e -> new PermissionDebugFrame(_userId));
-        add(debugButton);*/
+        if (_accessControlService.hasPermissionFor(_userId, "place_orders")) {
+            JButton placeOrderButton = new JButton("Создать заказ");
+            placeOrderButton.addActionListener(e -> new PlaceOrderFrame(_userId));
+            add(placeOrderButton);
+        }
+
+        if (_accessControlService.hasPermissionFor(_userId, "process_orders")) {
+            JButton processOrderButton = new JButton("Обслуживание заказов");
+            processOrderButton.addActionListener(e -> new ProcessOrdersFrame());
+            add(processOrderButton);
+        }
 
         setVisible(true);
     }
 }
 
+
+/*
+        Sad
+        //кнокпка проверки прав текущего пользователя
+        JButton debugButton = new JButton("Права пользователя");
+        debugButton.addActionListener(e -> new PermissionDebugFrame(_userId));
+        add(debugButton);*/
 
 

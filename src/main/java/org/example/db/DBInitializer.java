@@ -8,8 +8,7 @@ public class DBInitializer {
     public DBInitializer() {
 
         try (Connection connection = DatabaseConnection.getConnection();
-             Statement statement = connection.createStatement())
-        {
+             Statement statement = connection.createStatement()) {
             statement.execute("create table if not exists users(" +
                     "id int auto_increment primary key," +
                     " username varchar(50) not null unique," +
@@ -40,6 +39,28 @@ public class DBInitializer {
                     " primary key (role_id, permission_id)," +
                     " foreign key (role_id) references roles(id)," +
                     " foreign key (permission_id) references permissions(id))"
+            );
+
+            statement.execute("create table if not exists equipment(" +
+                    "id int auto_increment primary key," +
+                    "name varchar(100) not null unique)"
+            );
+
+            statement.execute("create table if not exists role_equipment(" +
+                    "role_id int not null," +
+                    "equipment_id int not null," +
+                    "primary key (role_id, equipment_id)," +
+                    "foreign key (role_id) references roles(id)," +
+                    "foreign key (equipment_id) references equipment(id))"
+            );
+
+            statement.execute("create table if not exists equipment_orders (" +
+                    "id int auto_increment primary key," +
+                    "user_id int not null," +
+                    "equipment_id int not null," +
+                    "status enum('pending', 'serviced') default 'pending'," +
+                    "foreign key (user_id) references users(id)," +
+                    "foreign key (equipment_id) references equipment(id))"
             );
 
         } catch (SQLException e) {
